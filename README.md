@@ -1,4 +1,3 @@
-laspotipy
-=========
+#Laspotipy
 
-CLI python tool to migrate user Last.fm playlists to Spotify where it can grow...
+Migrates Last.fm playlists to Spotify where they can grow old!
