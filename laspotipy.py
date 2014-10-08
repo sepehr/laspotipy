@@ -12,7 +12,7 @@
 # - Provide the option to read laspotipy error logs and retry creating the Spotify playlist
 # - Provide option to create PRIVATE Spotify playlists
 # - Handle HTTP errors, be graceful
-# - Check for existing playlists
+# - Check for existing playlists, sync!
 # - Restructure, more abstraction, cleanup!
 # - Add license info, copyright, etc.
 # - Write installation instructions, and requirements
