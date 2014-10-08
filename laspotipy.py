@@ -160,13 +160,14 @@ def main():
         sys.exit('\nUSAGE: laspotipy.py LASTFM_USERNAME SPOTIFY_USERNAME\n')
     else:
         lastfm_user  = sys.argv[1]
-        spotify_user = sys.argv[2]
+        spotify_user = sys.argv[2].lower()
 
     # Introduce
     print '''
 
-    Laspotipy is a utility to migrate your Last.fm playlists to your Spotify account
-    where you can ACTUALLY play them, collaborate on them with your friends, etc.
+    Laspotipy is a utility to migrate your (or others) Last.fm playlists to your
+    Spotify account where you can ACTUALLY play them, collaborate on them with
+    your friends, etc.
 
     Unlike similar tools/services Laspotipy needs no manual export of playlists,
     no manual uploading, no manual nothing! Plus it implements much more precise
@@ -201,7 +202,7 @@ def main():
     # -------------------------------------------------------------------------
     spotify_pls = []
     lastfm_pls  = lastfm_playlists(lastfm_user)
-    lastfm_pls = lastfm_pls[1:2] # DEBUG
+    # lastfm_pls = lastfm_pls[1:2] # DEBUG
 
     if not lastfm_pls:
         sys.exit('[ERROR] Could not fetch last.fm playlists, is there any?')
