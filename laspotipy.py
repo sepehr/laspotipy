@@ -2,20 +2,39 @@
 #
 # Usage:
 # laspotipy.py LASTFM_USERNAME SPOTIFY_USERNAME
+#
+# TODOs:
+# - Improve search algorithm
+# - Wrap each endpoint logic as classes
+# - Provide verbosity CLI options
+# - Provide the option to save playlists to file
+# - Provide the option to read Last.fm playlists to file
+# - Provide the option to read laspotipy error logs and retry creating the Spotify playlist
+# - Provide option to create PRIVATE Spotify playlists
+# - Handle HTTP errors, be graceful
+# - Check for existing playlists
+# - Restructure, more abstraction, cleanup!
+# - Add license info, copyright, etc.
+# - Write installation instructions, and requirements
 
 import spotipy
+import spotipy.util
 import lastfmapi
 import csv
 import sys
 import pprint
 
-LASTFM_API_KEY = 'f181e975265edd51e83182def6b5958a'
+LASTFM_API_KEY        = 'f181e975265edd51e83182def6b5958a'
+SPOTIFY_CLIENT_ID     = '6508015df04044ffa68efaa4cc4ac8c3'
+SPOTIFY_CLIENT_SECRET = '6186195c2bf34bd6a2caf05d76f157fc'
+SPOTIFY_AUTH_SCOPE    = 'playlist-modify-public playlist-modify-private'
+SPOTIFY_REDIRECT_URI  = 'https://sepehr.github.io/laspotipy'
 
 def spotify_uri(artist, track, album = False):
-    """
+    '''
     Returns spotify uri by artist and track names using Spotify Web API.
-    """
-    spotify  = spotipy.Spotify()
+    '''
+    spotify = spotipy.Spotify()
 
     if album:
         query = 'artist:%s album:%s %s' % (artist, album, track)
@@ -30,10 +49,49 @@ def spotify_uri(artist, track, album = False):
     return False
 
 
+def spotify_playlist_create(token, username, name, public = True):
+    '''
+    Creates a public Spotify playlist using its API and returns its ID.
+    '''
+    spotify  = spotipy.Spotify(token)
+    response = spotify.user_playlist_create(username, name, public = public)
+
+    if not response or not response['id']:
+        return False
+
+    return response['id']
+
+
+def spotify_playlist_add(token, username, playlist_id, tracks):
+    '''
+    Adds passed track URIs to the playlist specified.
+    '''
+    spotify  = spotipy.Spotify(token)
+
+    # Add the first 100 tracks
+    response = spotify.user_playlist_add_tracks(username, playlist_id, tracks[:100])
+
+    if response != None:
+        return False
+
+    # A maximum of 100 tracks can be added per request, so:
+    if len(tracks) > 100:
+        response = spotify_playlist_add(token, username, playlist_id, tracks[100:])
+
+    return response == None
+
+
+def spotify_auth_token(username, auth_scope, client_key, client_secret, redirect_uri):
+    '''
+    Grabs passed scope permissions for a Spotify user.
+    '''
+    return spotipy.util.prompt_for_user_token(username, auth_scope, client_key, client_secret, redirect_uri)
+
+
 # def spotify_playlist(filepath, delimiter = '\t'):
-#     """
+#     '''
 #     Gets a text file and prints out a Spotify playlist to copy and paste.
-#     """
+#     '''
 #     reader = csv.reader(open(filepath), delimiter = delimiter)
 
 #     for line in reader:
@@ -52,9 +110,9 @@ def spotify_uri(artist, track, album = False):
 
 
 def lastfm_playlists(username):
-    """
+    '''
     Return an array of Last.fm playlist IDs/Titles belong to the passed username.
-    """
+    '''
     lastfm    = lastfmapi.LastFmApi(LASTFM_API_KEY)
     response  = lastfm.user_getplaylists(user = username)
 
@@ -73,11 +131,11 @@ def lastfm_playlists(username):
 
 
 def lastfm_playlist_tracks(pl_id):
-    """
+    '''
     Gets playlist tracks using by Last.fm playlist ID
-    """
-    lastfm    = lastfmapi.LastFmApi(LASTFM_API_KEY)
-    response = lastfm.playlist_fetch(playlistURL = 'lastfm://playlist/' + pl_id)
+    '''
+    lastfm   = lastfmapi.LastFmApi(LASTFM_API_KEY)
+    response = lastfm.playlist_fetch(playlistURL = 'lastfm://playlist/' + str(pl_id))
 
     if not response or len(response['playlist']['trackList']['track']) < 1:
         return False
@@ -95,64 +153,129 @@ def lastfm_playlist_tracks(pl_id):
 
 
 def main():
-    # Check args
+    # -------------------------------------------------------------------------
+    # Check args, init
+    # -------------------------------------------------------------------------
     if len(sys.argv) < 3:
         sys.exit('\nUSAGE: laspotipy.py LASTFM_USERNAME SPOTIFY_USERNAME\n')
     else:
-        lastfm_username  = sys.argv[1]
-        spotify_username = sys.argv[2]
+        lastfm_user  = sys.argv[1]
+        spotify_user = sys.argv[2]
 
-    # Fetch user playlists
-    playlists = lastfm_playlists(lastfm_username)
+    # Introduce
+    print '''
 
-    if not playlists:
-        sys.exit('ERROR: Could not fetch last.fm playlists, is there any?')
+    Laspotipy is a utility to migrate your Last.fm playlists to your Spotify account
+    where you can ACTUALLY play them, collaborate on them with your friends, etc.
 
-    print '\nFound %d playlists for %s.' % (len(playlists), lastfm_username)
+    Unlike similar tools/services Laspotipy needs no manual export of playlists,
+    no manual uploading, no manual nothing! Plus it implements much more precise
+    algorithm of finding Spotify tracks.
 
-    # Processing each playlist
-    for pl in playlists:
+    It first conncects to Last.fm API and fetches the playlists found for the
+    specified user. No authorization is required and so you can add other user
+    playlists to your Spotify account.
+
+    On the other hand, you need to authorize Laspotipy to access to your Spotify
+    account in order to be able to create playlists. After processing Last.fm playlists
+    and the tracks, you will be presented with a new page opened in your browser. You
+    need to login to Spotify service (if not logged in) and grant the required permissions
+    to Laspotipy. If granted, you will be redirected to a new URL (sepehr.github.com/laspotipy),
+    copy the whole URL and paste it to Laspotipy CLI application where it waits and waits
+    for you, the lord, to be blessed by the permissions.
+
+    OK, no more bullshit. Have fun, and listen to good music :)
+
+
+    P.S. Find my music profiles at:
+    http://last.fm/user/lajevardi
+    http://play.spotify.com/user/sepehrlajevardi
+
+    '''
+
+    # Remove this, seriously!
+    raw_input('Press any key to continue...')
+
+    # -------------------------------------------------------------------------
+    # Get Last.fm playlists
+    # -------------------------------------------------------------------------
+    spotify_pls = []
+    lastfm_pls  = lastfm_playlists(lastfm_user)
+    lastfm_pls = lastfm_pls[1:2] # DEBUG
+
+    if not lastfm_pls:
+        sys.exit('[ERROR] Could not fetch last.fm playlists, is there any?')
+
+    print '\nConnecting to Last.fm API endpoint...'
+    print 'Found %d playlists for user: %s' % (len(lastfm_pls), lastfm_user)
+
+    # -------------------------------------------------------------------------
+    # Process each track to find Spotify's equivalent URI
+    # -------------------------------------------------------------------------
+    for pl in lastfm_pls:
         print '\nProcessing "%s"...' % pl['title']
 
         tracks = lastfm_playlist_tracks(pl['id'])
 
         if not tracks:
-            print '\tERROR: Could not fetch tracks for this playlist, is there any? Skipping...'
+            print '[ERROR] Could not fetch tracks for this playlist, is there any? Skipping...'
             continue
 
-        print '\tFound %d tracks in the playlist:' % len(tracks)
+        print 'Found %d tracks in the playlist:' % len(tracks)
 
-        failed = 0
-        spotify_playlist = {
+        # Process each track and build spotify_pl playlist
+        failed     = 0
+        spotify_pl = {
             'title':  pl['title'],
             'tracks': [],
             'failed': []
         }
 
-        # Processing each track
         for track in tracks:
             uri = spotify_uri(track['artist'], track['title'], track['album'])
-            print '\t\t"%s - %s"' % (track['artist'][:40], track['title'][:40])
+            print '\t"%s - %s"' % (track['artist'][:40], track['title'][:40])
 
             if uri:
-                print '\t\t[FOUND] %s\n' % uri
-                spotify_playlist['tracks'].extend([uri])
+                print '\t[FOUND] %s\n' % uri
+                spotify_pl['tracks'].extend([uri])
 
             else:
-                print '\t\t[FAILED]\n'
-                spotify_playlist['failed'].extend(['%s - %s - %s' % (track['artist'], track['album'], track['title'])])
+                print '\t[FAILED]\n'
+                spotify_pl['failed'].extend(['%s - %s' % (track['artist'], track['title'])])
                 failed += 1
 
-        print '\t%d tracks failed to be found on Spotify. Failures will be logged to file.' % failed
+        spotify_pls.extend([spotify_pl])
+        print '%d tracks failed to be found on Spotify. Failures will be logged to file.' % failed
 
-        # ---------------------------------------------------------------------
-        # Printing Spotify playlist to file
-        fp = file('/Users/Sepehr/Downloads/%s.txt' % spotify_playlist['title'], 'w+')
-        fp.write('\n'.join(spotify_playlist['tracks']))
+    # -------------------------------------------------------------------------
+    # Build Spotify playlists
+    # -------------------------------------------------------------------------
+    print '\n\nConnecting to Spotify API endpoint, authorizing as "%s"...' % spotify_user
 
-        # Print failures to file as well
-        fp = file('/Users/Sepehr/Downloads/%s.failed.txt' % spotify_playlist['title'], 'w+')
-        fp.write('\n'.join(spotify_playlist['failed']))
+    # Authorize user
+    token = spotify_auth_token(spotify_user, SPOTIFY_AUTH_SCOPE, SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT_URI)
+
+    for pl in spotify_pls:
+        print '\n\tCreating Spotify playlist with %d found tracks: "%s"' % (len(pl['tracks']), pl['title'])
+
+        pl_id = spotify_playlist_create(token, spotify_user, pl['title'])
+        if not pl_id:
+            print '\t[ERROR] Could not create Spotify playlist. Skipping...'
+            continue
+
+        success = spotify_playlist_add(token, spotify_user, pl_id, pl['tracks'])
+        if not success:
+            print '\t[ERROR] Could not add tracks to the playlist. Please make sure to REMOVE the playlist manually.'
+            continue
+
+        # Logging failures
+        if len(pl['failed']):
+            fp = file('%s.failed.txt' % pl['title'], 'w+')
+            fp.write('\n'.join(pl['failed']))
+            print '\t[LOGGED]  %s.failed.txt (%d entries)' % (pl['title'], len(pl['failed']))
+
+        print '\t[SUCCESS] Enjoy!'
+    print
 
 
 if __name__ == '__main__':
