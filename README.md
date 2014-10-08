@@ -6,8 +6,9 @@ Migrates Last.fm playlists to Spotify where they can grow old!
 Under active development, there will be bugs!
 
 ###Introduction
-Laspotipy is a utility to migrate your Last.fm playlists to your Spotify account
-where you can ACTUALLY play them, collaborate on them with your friends, etc.
+Laspotipy is a utility to migrate your (or others) Last.fm playlists to your
+Spotify account where you can ACTUALLY play them, collaborate on them with
+your friends, etc.
 
 Unlike similar tools/services Laspotipy needs no manual export of playlists,
 no manual uploading, no manual nothing! Plus it implements much more precise
