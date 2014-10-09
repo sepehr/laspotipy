@@ -1,0 +1,119 @@
+body {
+    font-family: 'Georgia', serif;
+    font-size: 18px;
+    font-style: italic;
+    color: #333;
+}
+
+#wrapper {
+    width: 560px;
+    margin: 40px auto;
+}
+
+#header {
+    width: 377px;
+    text-align: center;
+    margin: 200px auto 80px auto;
+    position: relative;
+}
+
+#content {
+    margin-bottom: 80px;
+}
+
+#footer {
+    text-align: center;
+}
+
+#btns {
+    text-align: right;
+    padding-right: 16px;
+    margin-top: 10px;
+}
+
+iframe {
+    border: 0;
+    /*position: absolute;*/
+}
+
+#btnfork {
+    top: 32px;
+    right: -49px;
+}
+
+#btnfollow {
+    top: 0;
+    right: 0;
+}
+
+h1 {
+    margin-bottom: 8px;
+    font-size: 72px;
+    background: url(laspotipy.png) no-repeat center;
+    text-indent: -9999px;
+}
+
+.tagline {
+    color: #aaa;
+    font-size: 22px;
+    text-align: right;
+    padding-right: 10px;
+}
+
+a {
+    color: #004B6B;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #6D4100;
+}
+
+h2, h3, h4 {
+    font-family: 'Garamond', 'Georgia', serif;
+    font-weight: normal;
+}
+
+textarea,
+code,
+pre {
+    font-family: 'Consolas', 'Monaco', 'Menlo', 'Deja Vu Sans Mono', 'Bitstream Vera Sans Mono', monospace!important;
+    font-size: 15px;
+    background: #eee;
+}
+
+pre {
+    padding: 7px 30px;
+    margin: 15px -30px;
+    line-height: 1.3;
+}
+
+p {
+    line-height: 1.4;
+}
+
+ul {
+    margin: 15px 0 15px 0;
+    padding: 0;
+    list-style: none;
+    line-height: 1.4;
+}
+
+ul li:before {
+    content: "\00BB \0020";
+    color: #888;
+    position: absolute;
+    margin-left: -19px;
+}
+
+ol {
+    line-height: 1.4;
+    margin: 15px 0 15px 30px;
+    padding: 0;
+}
+
+blockquote {
+    margin: 0;
+    font-style: italic;
+    color: #444;
+}
