@@ -25,17 +25,6 @@ body {
     text-align: center;
 }
 
-#btns {
-    text-align: right;
-    padding-right: 16px;
-    margin-top: 10px;
-}
-
-iframe {
-    border: 0;
-    margin: 0 3px;
-}
-
 h1 {
     margin-bottom: 8px;
     font-size: 72px;
