@@ -6,19 +6,21 @@ body {
 }
 
 #wrapper {
-    width: 560px;
+    width: 480px;
     margin: 40px auto;
 }
 
 #header {
     width: 377px;
     text-align: center;
-    margin: 200px auto 80px auto;
+    margin: 170px auto 80px auto;
     position: relative;
 }
 
 #content {
     margin-bottom: 80px;
+    line-height: 30px;
+    text-align: right;
 }
 
 #footer {
@@ -38,6 +40,13 @@ h1 {
     text-align: right;
     padding-right: 10px;
     line-height: 30px;
+}
+
+.github-ribbon {
+    position: absolute;
+    top: 0;
+    right: 0;
+    border: 0;
 }
 
 a {

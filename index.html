@@ -4,7 +4,15 @@
 <head>
     <title>laspotipy — Python utility to migrate Last.fm playlists to Spotify</title>
     <meta charset="utf-8">
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link type="text/css" rel="stylesheet" href="style.css">
+
+    <script type="text/javascript">
+        window.onload = function() {
+            if (location.href.indexOf('?code=') != -1) {
+                document.getElementById('content').style.display = 'block'
+            }
+        }
+    </script>
 </head>
 
 <body>
@@ -21,9 +29,15 @@
             </div>
         </a>
 
-        <div id="content"></div>
+        <div id="content" style="display:none">
+            In order to proceed with the Spotify authorization process <u>copy the exact url</u> of this page to laspotipy CLI prompt; She's waiting a window away... to get to know you!
+        </div>
 
         <div id="footer"></div>
     </div>
+
+    <a href="https://github.com/sepehr/laspotipy">
+        <img class="github-ribbon" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="">
+    </a>
 </body>
 </html>
