@@ -58,3 +58,5 @@ http://play.spotify.com/user/sepehrlajevardi
 - Restructure, more abstraction, cleanup!  
 - Add license info, copyright, etc.  
 - Write installation instructions, and requirements  
+- Ability to migrate user favorite tracks  
+- Interactive mode  
