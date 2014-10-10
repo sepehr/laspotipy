@@ -2,20 +2,6 @@
 #
 # Usage:
 # laspotipy.py LASTFM_USERNAME SPOTIFY_USERNAME
-#
-# TODOs:
-# - Improve search algorithm
-# - Wrap each endpoint logic as classes
-# - Provide verbosity CLI options
-# - Provide the option to save playlists to file
-# - Provide the option to read Last.fm playlists to file
-# - Provide the option to read laspotipy error logs and retry creating the Spotify playlist
-# - Provide option to create PRIVATE Spotify playlists
-# - Handle HTTP errors, be graceful
-# - Check for existing playlists, sync!
-# - Restructure, more abstraction, cleanup!
-# - Add license info, copyright, etc.
-# - Write installation instructions, and requirements
 
 import spotipy
 import spotipy.util
