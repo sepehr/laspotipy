@@ -20,9 +20,7 @@
 import spotipy
 import spotipy.util
 import lastfmapi
-import csv
 import sys
-import pprint
 
 LASTFM_API_KEY        = 'f181e975265edd51e83182def6b5958a'
 SPOTIFY_CLIENT_ID     = '6508015df04044ffa68efaa4cc4ac8c3'
