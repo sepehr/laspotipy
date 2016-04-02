@@ -3,7 +3,7 @@
 Migrates Last.fm playlists to Spotify where they can grow old!
 
 ###Note
-Under active development, there will be bugs!
+As the new last.fm beta release has messed up with Playlists API and they're eventually gone! Laspotipy does not work anymore. See [XSPFy](https://github.com/sepehr/xspfy) for another solution.
 
 ###Introduction
 Laspotipy is a utility to migrate your (or others) Last.fm playlists to your
